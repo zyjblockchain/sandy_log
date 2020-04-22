@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	logDir        = "log"       // 日志存储目录
-	logFileName   = "glemo.log" // 最新日志存储文件
-	fPrefix       = "glemo"
+	logDir        = "logs"    // 日志存储目录
+	logFileName   = "sls.log" // 最新日志存储文件
+	fPrefix       = "sls"
 	RotateLogSize = 64 * 1024 * 1024 // 64M
 	BackUpCount   = 19               // 滚动日志文件数
 )
@@ -91,7 +91,7 @@ func WriteFileHandler(logFilePath string, f *os.File, fmtr log15.Format) log15.H
 		_, err := f.Write(fmtr.Format(r))
 		return err
 	})
-	return log15.LazyHandler(log15.BufferedHandler(20480, h)) // 缓存20k
+	return log15.LazyHandler(log15.SyncHandler(h))
 }
 
 // rotateLogFile 滚动日志文件

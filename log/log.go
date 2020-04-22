@@ -36,7 +36,7 @@ func Setup(lv log15.Lvl, toFile bool, showCodeLine bool) {
 		log15.StreamHandler(output, TerminalFormat(useColor, showCodeLine)),
 	}
 	if toFile {
-		handlers = append(handlers, FileHandler(logFilePath, log15.JsonFormat())) // 日志文件存储路径: ./log/glemo.log
+		handlers = append(handlers, FileHandler(logFilePath, TerminalFormat(useColor, showCodeLine))) // 日志文件存储路径: ./log/glemo.log
 	}
 	handler := log15.MultiHandler(handlers...)
 	handler = log15.LvlFilterHandler(outputLv, handler)
