@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	logDir        = "logs"    // 日志存储目录
+	logDir        = "logDir"  // 日志存储目录
 	logFileName   = "sls.log" // 最新日志存储文件
 	fPrefix       = "sls"
 	RotateLogSize = 64 * 1024 * 1024 // 64M
