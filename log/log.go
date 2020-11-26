@@ -2,11 +2,12 @@ package log
 
 import (
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/inconshreveable/log15"
 	"github.com/inconshreveable/log15/term"
 	"github.com/mattn/go-colorable"
-	"io"
-	"os"
 )
 
 var srvLog = log15.New()
@@ -20,12 +21,12 @@ const (
 )
 
 func init() {
-	Setup(LevelInfo, false, false)
+	Setup("default", LevelInfo, false, false)
 }
 
 // Setup change the log config immediately
 // The lv is higher the more logs would be visible
-func Setup(lv log15.Lvl, toFile bool, showCodeLine bool) {
+func Setup(module string, lv log15.Lvl, toFile bool, showCodeLine bool) {
 	outputLv := lv
 	useColor := term.IsTty(os.Stdout.Fd()) && os.Getenv("TERM") != "dumb"
 	output := io.Writer(os.Stderr)
@@ -40,6 +41,7 @@ func Setup(lv log15.Lvl, toFile bool, showCodeLine bool) {
 	}
 	handler := log15.MultiHandler(handlers...)
 	handler = log15.LvlFilterHandler(outputLv, handler)
+	srvLog = log15.New(log15.Ctx{"module": module})
 	srvLog.SetHandler(handler)
 }
 
