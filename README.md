@@ -2,7 +2,7 @@
 
 引包   
 ```
-go get github.com/zyjblockchain/sandy_log/log
+go get github.com/everFinance/sandy_log/log
 ```
 
 使用   
