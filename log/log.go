@@ -102,3 +102,35 @@ func Critf(format string, values ...interface{}) {
 // You may wrap any function which takes no arguments to Lazy. It may return any
 // number of values of any type.
 type Lazy = log15.Lazy
+
+type Log struct {
+	srvLog log15.Logger
+}
+
+func NewLog(module string, lv log15.Lvl, toFile bool, showCodeLine bool) Log {
+	Setup(module, lv, toFile, showCodeLine)
+	return Log{
+		srvLog: srvLog,
+	}
+}
+
+func (l *Log) Debug(msg string, ctx ...interface{}) {
+	l.srvLog.Debug(msg, ctx...)
+}
+
+func (l *Log) Info(msg string, ctx ...interface{}) {
+	l.srvLog.Info(msg, ctx...)
+}
+
+func (l *Log) Warn(msg string, ctx ...interface{}) {
+	l.srvLog.Warn(msg, ctx...)
+}
+
+func (l *Log) Error(msg string, ctx ...interface{}) {
+	l.srvLog.Error(msg, ctx...)
+}
+
+func (l *Log) Crit(msg string, ctx ...interface{}) {
+	l.srvLog.Crit(msg, ctx...)
+	os.Exit(1)
+}
