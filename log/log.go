@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/inconshreveable/log15"
 	"github.com/inconshreveable/log15/term"
@@ -107,8 +108,16 @@ type Log struct {
 	srvLog log15.Logger
 }
 
-func NewLog(module string, lv log15.Lvl, toFile bool, showCodeLine bool) Log {
-	Setup(module, lv, toFile, showCodeLine)
+// NewLog if env "LOG_MODE=prod or production" log level is info and showCodeLine == false
+func NewLog(module string, logLevel log15.Lvl, toFile bool) Log {
+	showCodeLine := true
+
+	logMode := os.Getenv("LOG_MODE")
+	if strings.Contains(strings.ToLower(logMode), "prod") {
+		logLevel = LevelInfo
+		showCodeLine = false
+	}
+	Setup(module, logLevel, toFile, showCodeLine)
 	return Log{
 		srvLog: srvLog,
 	}
