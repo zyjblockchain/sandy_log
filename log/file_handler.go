@@ -11,8 +11,8 @@ const (
 	logDir        = "log_dir" // 日志存储目录
 	logFileName   = "sls.log" // 最新日志存储文件
 	fPrefix       = "sls"
-	RotateLogSize = 64 * 1024 * 1024 // 64M
-	BackUpCount   = 19               // 滚动日志文件数
+	RotateLogSize = 1024 * 1024 * 1024 // 1G
+	BackUpCount   = 190                // 滚动日志文件数
 )
 
 var (

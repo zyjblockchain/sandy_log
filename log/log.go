@@ -2,11 +2,13 @@ package log
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"strings"
+
 	"github.com/inconshreveable/log15"
 	"github.com/inconshreveable/log15/term"
 	"github.com/mattn/go-colorable"
-	"io"
-	"os"
 )
 
 var srvLog = log15.New()
@@ -20,12 +22,12 @@ const (
 )
 
 func init() {
-	Setup(LevelInfo, false, false)
+	Setup("default", LevelInfo, false, false)
 }
 
 // Setup change the log config immediately
 // The lv is higher the more logs would be visible
-func Setup(lv log15.Lvl, toFile bool, showCodeLine bool) {
+func Setup(module string, lv log15.Lvl, toFile bool, showCodeLine bool) {
 	outputLv := lv
 	useColor := term.IsTty(os.Stdout.Fd()) && os.Getenv("TERM") != "dumb"
 	output := io.Writer(os.Stderr)
@@ -40,6 +42,7 @@ func Setup(lv log15.Lvl, toFile bool, showCodeLine bool) {
 	}
 	handler := log15.MultiHandler(handlers...)
 	handler = log15.LvlFilterHandler(outputLv, handler)
+	srvLog = log15.New(log15.Ctx{"module": module})
 	srvLog.SetHandler(handler)
 }
 
@@ -100,3 +103,43 @@ func Critf(format string, values ...interface{}) {
 // You may wrap any function which takes no arguments to Lazy. It may return any
 // number of values of any type.
 type Lazy = log15.Lazy
+
+type Log struct {
+	srvLog log15.Logger
+}
+
+// NewLog if env "LOG_MODE=prod or production" log level is info and showCodeLine == false
+func NewLog(module string, logLevel log15.Lvl, toFile bool) Log {
+	showCodeLine := true
+
+	logMode := os.Getenv("LOG_MODE")
+	if strings.Contains(strings.ToLower(logMode), "prod") {
+		logLevel = LevelInfo
+		showCodeLine = false
+	}
+	Setup(module, logLevel, toFile, showCodeLine)
+	return Log{
+		srvLog: srvLog,
+	}
+}
+
+func (l *Log) Debug(msg string, ctx ...interface{}) {
+	l.srvLog.Debug(msg, ctx...)
+}
+
+func (l *Log) Info(msg string, ctx ...interface{}) {
+	l.srvLog.Info(msg, ctx...)
+}
+
+func (l *Log) Warn(msg string, ctx ...interface{}) {
+	l.srvLog.Warn(msg, ctx...)
+}
+
+func (l *Log) Error(msg string, ctx ...interface{}) {
+	l.srvLog.Error(msg, ctx...)
+}
+
+func (l *Log) Crit(msg string, ctx ...interface{}) {
+	l.srvLog.Crit(msg, ctx...)
+	os.Exit(1)
+}
