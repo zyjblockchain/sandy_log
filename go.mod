@@ -1,4 +1,4 @@
-module github.com/everFinance/sandy_log
+module github.com/zyjblockchain/sandy_log
 
 go 1.15
 
